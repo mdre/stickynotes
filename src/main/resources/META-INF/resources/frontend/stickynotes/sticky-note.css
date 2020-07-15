@@ -1,0 +1,11 @@
+.stickynote {
+    /*z-index: 10000;*/
+    position: absolute;
+    visibility: hidden;
+}
+
+.stickynote.show {
+    visibility: visible;
+    opacity: 1;
+}
+
