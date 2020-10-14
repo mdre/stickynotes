@@ -1,5 +1,6 @@
 package com.awesomecontrols.stickynotes;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
@@ -11,6 +12,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.dom.Element;
+import elemental.json.JsonValue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -26,14 +28,11 @@ public class StickyBoard extends PolymerTemplate<IStickyBoardModel> implements H
     private final static Logger LOGGER = Logger.getLogger(StickyBoard.class.getName());
     static {
         if (LOGGER.getLevel() == null) {
-            LOGGER.setLevel(Level.INFO);
+            LOGGER.setLevel(Level.FINEST);
         }
     }
     
-    @Id("board")
-    Div board;
-    
-    //@Id("stickyArea")
+    @Id("stickyArea")
     Div stickyArea;
     
     double height;
@@ -50,6 +49,12 @@ public class StickyBoard extends PolymerTemplate<IStickyBoardModel> implements H
         TOP_LEFT
     }
     
+    // determina si se han recibido los datos desde la última vez que se invocó al método save.
+    JsonValue notesData;
+
+    
+    ISaveNotes saveNotesCallback;
+    
     Align alignTo = Align.TOP_RIGHT;
     
     int x_offset = 0;
@@ -59,14 +64,30 @@ public class StickyBoard extends PolymerTemplate<IStickyBoardModel> implements H
     
     public StickyBoard(Element target) {
         this.targetId = target;
-        UI.getCurrent().add(this);
-        getElement().callJsFunction("init",target,alignTo.toString(),x_offset,y_offset);
+        //targetId.getParentNode().insertChild(targetId.getParentNode().indexOfChild(target), this.getElement());
+        
+        getElement().callJsFunction("init",targetId,alignTo.toString(),x_offset,y_offset);
+        //UI.getCurrent().add(this);
     }
     
     public void show() {
         //getElement().callJsFunction("updatePositionAndShow");
     }
     
+    /**
+     * Attach the Stickyboard to the UI
+     * @return 
+     */
+    public StickyBoard doDefaultAttach() {
+        UI.getCurrent().add(this);
+        this.init();
+        return this;
+    }
+    
+    public StickyBoard init() {
+        getElement().callJsFunction("init",this.targetId,alignTo.toString(),x_offset,y_offset);
+        return this;
+    }
     
     /**
      * Set the component align based on target ID
@@ -111,9 +132,9 @@ public class StickyBoard extends PolymerTemplate<IStickyBoardModel> implements H
     
     @ClientCallable
     private void toggleBoard() {
-        getElement().callJsFunction("updatePositionAndShow", this.targetId);
+        getElement().callJsFunction("updatePosition");
     }
-
+    
     
     /**
      * Add a visibility change listener.
@@ -141,15 +162,49 @@ public class StickyBoard extends PolymerTemplate<IStickyBoardModel> implements H
 
     public StickyBoard setHeight(double h) {
         this.height = h;
-        this.board.getStyle().set("height", height + "px");
+        this.stickyArea.getStyle().set("height", height + "px");
         return this;
     }
 
 
     public StickyBoard setWidth(double w) {
         this.width = w;
-        this.board.getStyle().set("width", w + "px");
+        this.stickyArea.getStyle().set("width", w + "px");
         return this;
     }
+    
+    public void requestToSave() {
+        this.notesData = null;
+        getElement().callJsFunction("save").then((notesData) -> {
+            LOGGER.log(Level.FINEST, "noteData: "+notesData.toJson());
+            this.notesData = notesData;
+            if (saveNotesCallback != null) {
+                saveNotesCallback.onDataUpdated();
+            }
+        });
+        LOGGER.log(Level.FINEST, "save end");
+    }
+    
+    
+    public void setSaveCallback(ISaveNotes callback) {
+        this.saveNotesCallback = callback;
+    }
+    
+    public void load(String notesData) {
+        getElement().callJsFunction("load",notesData);
+    }
+  
+    public JsonValue getNotesData() {
+        return notesData;
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent); //To change body of generated methods, choose Tools | Templates.
+        LOGGER.log(Level.FINEST, "onAttach");
+        getElement().callJsFunction("updatePosition");
+    }
+    
+    
 }
 
