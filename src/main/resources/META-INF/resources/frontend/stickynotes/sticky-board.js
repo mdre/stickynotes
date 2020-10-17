@@ -171,7 +171,7 @@ class StickyBoard extends ThemableMixin(PolymerElement) {
     //------------------
     
     
-    internalAddNote(title, noteText) {
+    internalAddNote(title, noteText, bgColor) {
         var noteList = this.shadowRoot.querySelector("#noteList");
         // console.log(noteList);
         
@@ -179,6 +179,18 @@ class StickyBoard extends ThemableMixin(PolymerElement) {
         // dado que ya apunta al siguiente elemento.
         var nodeIdx = noteList.childElementCount; 
         //console.log("nodeIdx:",nodeIdx);
+        var bgStyle = "mistyrose";
+        switch(nodeIdx%3) {
+            case 0: 
+                bgStyle = "mistyrose";
+                break;
+            case 1:
+                bgStyle = "skyblue";
+                break;
+            case 2:
+                bgStyle = "snow";
+                break;
+        }
         
         // agregar el li a la lista
         noteList.appendChild(this.noteTemplate().content.cloneNode(true));
@@ -188,6 +200,13 @@ class StickyBoard extends ThemableMixin(PolymerElement) {
         
         // obtener la referencia
         var newNote = lis[nodeIdx];
+        
+        var bg = newNote.querySelector("#note");
+        if (bgColor) {
+            bg.style.background = bgColor;
+        } else {
+            bg.style.background = bgStyle;
+        }
 
         if (title) {
             var t = newNote.querySelector("#noteTitle");
@@ -216,6 +235,7 @@ class StickyBoard extends ThemableMixin(PolymerElement) {
         
         var closeCancel =  newNote.querySelector("#cancel");
         closeCancel.addEventListener("click",(event)=>{this.closeCancel(event);},false);
+        
         
     } 
     
@@ -267,9 +287,12 @@ class StickyBoard extends ThemableMixin(PolymerElement) {
                     .replace(/<\/div>/g,"")
                     .replace(/<br>/g,"\n");
             
+            var nBgColor = noteItem.querySelector("#note").style.background;
+            
             saveNoteData.push({
                     title: nTitle,
-                    noteText: nText
+                    noteText: nText,
+                    background: nBgColor
                 });
           
         }
@@ -283,7 +306,7 @@ class StickyBoard extends ThemableMixin(PolymerElement) {
         var notesData = JSON.parse(data);        
         for (var note of notesData) {
             this.log(note,"t: ",note.title,"note text:",note.noteText);
-            this.internalAddNote(note.title, note.noteText);
+            this.internalAddNote(note.title, note.noteText, note.background);
         }
     }
 };

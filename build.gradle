@@ -208,7 +208,8 @@ task createVaadinDirectoryRelease(type: Zip) {
         vdManifest << "Vaadin-Package-Version: 1\n"
         vdManifest << "Vaadin-Addon: stickynotes-"+targetVersion+".jar\n"
         vdManifest << "Implementation-Vendor: MarceloDRe \n"
-        vdManifest << "Implementation-Title: Sticky Notes component for Vaadin Flow 14.+\n"
+//        vdManifest << "Implementation-Title: Sticky Notes for Vaadin Flow 14.+\n"
+        vdManifest << "Implementation-Title: "+project.title+"\n"
         vdManifest << "Implementation-Version: "+targetVersion+"\n"
         
         // copiar los archivos al directorio

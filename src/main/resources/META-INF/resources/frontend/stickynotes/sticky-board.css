@@ -87,7 +87,7 @@
     user-select: none;
 }
 
-div#addNote:hover{
+div#addNote:hover {
     -webkit-transform: scale(1.2);
     -moz-transform: scale(1.2);
     -o-transform: scale(1.2);
@@ -164,7 +164,7 @@ ul li:nth-child(even) div#note{
     -o-transform: rotate(4deg);	
     position: relative;
     top: 5px;
-    background: mistyrose;
+    /*background: mistyrose;*/
 }
 
 ul li:nth-child(3n) div#note{
@@ -173,7 +173,7 @@ ul li:nth-child(3n) div#note{
     -o-transform: rotate(-3deg);	
     position: relative;
     top: -5px;	
-    background: skyblue;
+    /*background: skyblue;*/
 }
 
 ul li:nth-child(5n) div#note{
@@ -182,10 +182,10 @@ ul li:nth-child(5n) div#note{
     -o-transform: rotate(5deg);	
     position: relative;
     top: -10px;	
-    background: snow;
+    /*background: snow;*/
 }
 
-ul li div#note:hover, ul li div#note:focus{
+ul li div#note:hover, ul li div#note:focus-within {
     -webkit-box-shadow: 10px 10px 7px rgba(0, 0, 0, .7);
     -moz-box-shadow: 10px 10px 7px rgba(0, 0, 0, .7);
     -o-box-shadow: 10px 10px 7px rgba(0, 0, 0, .7);
